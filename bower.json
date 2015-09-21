@@ -1,0 +1,37 @@
+{
+  "name": "betsol-ng-entity-list",
+  "description": "Automatic entity lists for Angular.js",
+  "version": "0.0.0",
+  "main": "dist/betsol-ng-entity-list.js",
+  "ignore": [
+    "src",
+    "test",
+    ".*",
+    "gulpfile.js",
+    "karma.conf.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular-ui-router": "~0.2.15",
+    "betsol-ng-paginator": "~0"
+  },
+  "devDependencies": {
+    "angular": "~1",
+    "angular-mocks": "~1.4.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/betsol/ng-entity-list.git"
+  },
+  "keywords": [
+    "betsol",
+    "angular",
+    "angular.js",
+    "entity",
+    "entities",
+    "list",
+    "view",
+    "template",
+    "generator"
+  ]
+}
