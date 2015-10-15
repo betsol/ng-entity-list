@@ -92,7 +92,8 @@
           };
         }
 
-        $scope.renderValue = function (value, field) {
+        $scope.renderValue = function (entity, fieldName, field) {
+          var value = eval('entity.' + fieldName);
           var formatter = config.formatters[field.type] || config.formatters.default;
           return formatter(value, field);
         }
