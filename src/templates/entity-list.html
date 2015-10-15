@@ -25,7 +25,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="entity in paginator.list">
-                    <td ng-repeat="(fieldName, field) in scheme.fields">{~ entity[fieldName] ~}</td>
+                    <td ng-repeat="(fieldName, field) in scheme.fields">{~ renderValue(entity[fieldName], field) ~}</td>
                     <td ng-if="scheme.edit || scheme.delete" class="text-right">
                         <a
                             ng-if="scheme.edit"

@@ -6,7 +6,7 @@
  *
  * @author Slava Fomin II <s.fomin@betsol.ru>
  */
-(function (window, angular) {
+(function (window, angular, moment) {
 
   'use strict';
 
@@ -42,6 +42,19 @@
 
     .factory('EntityList', ['Paginator', function (Paginator) {
       return function (config) {
+
+        var defaultConfig = {
+          scope: null,
+          baseStateName: '',
+          repository: null,
+          scheme: null,
+          itemsPerPage: 50,
+          formatters: getDefaultFormatters()
+        };
+
+        config = angular.extend({}, defaultConfig, config);
+
+        console.log(config);
 
         if (!config.scope) {
           return console.log('Missing scope');
@@ -87,6 +100,12 @@
           };
         }
 
+        $scope.renderValue = function (value, field) {
+          console.log('Rendering value', [value, field]);
+          var formatter = config.formatters[field.type] || config.formatters.default;
+          return formatter(value, field);
+        }
+
       };
     }])
 
@@ -112,4 +131,23 @@
     return scheme;
   }
 
-})(window, angular);
+  function getDefaultFormatters() {
+    var formatters = {};
+
+    formatters.default = function (value) {
+      return value;
+    };
+
+    formatters.date = function (value, field) {
+      if (moment && moment.isMoment(value)) {
+        return value.format(field.format || 'D.M.YY HH:mm:ss');
+      } else if (value instanceof Date) {
+        return value.toString();
+      }
+    };
+
+    return formatters;
+
+  }
+
+})(window, angular, window.moment);
