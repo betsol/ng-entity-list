@@ -41,7 +41,8 @@
           repository: null,
           scheme: null,
           itemsPerPage: 50,
-          formatters: getDefaultFormatters()
+          formatters: getDefaultFormatters(),
+          criteria: {}
         };
 
         config = angular.extend({}, defaultConfig, config);
@@ -64,6 +65,7 @@
 
         var paginator = new Paginator(repository.find)
           .setItemsPerPage(config.itemsPerPage || defaultItemsPerPage)
+          .setCriteria(config.criteria)
         ;
 
         // Loading first batch.
