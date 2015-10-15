@@ -1,6 +1,6 @@
 /**
  * betsol-ng-entity-list - Automatic entity lists for Angular.js
- * @version v0.0.0
+ * @version v0.0.1
  * @link https://github.com/betsol/ng-entity-list
  * @license MIT
  *
@@ -54,8 +54,6 @@
 
         config = angular.extend({}, defaultConfig, config);
 
-        console.log(config);
-
         if (!config.scope) {
           return console.log('Missing scope');
         }
@@ -101,7 +99,6 @@
         }
 
         $scope.renderValue = function (value, field) {
-          console.log('Rendering value', [value, field]);
           var formatter = config.formatters[field.type] || config.formatters.default;
           return formatter(value, field);
         }
