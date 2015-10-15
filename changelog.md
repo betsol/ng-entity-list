@@ -1,5 +1,10 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.0.3
+(15 Oct 2015)
+
+- Implemented support for deep entity properties
+
 ## Version 0.0.2
 (15 Oct 2015)
 
