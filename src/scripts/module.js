@@ -42,7 +42,8 @@
           scheme: null,
           itemsPerPage: 50,
           formatters: getDefaultFormatters(),
-          criteria: {}
+          criteria: {},
+          sortParams: {}
         };
 
         config = angular.extend({}, defaultConfig, config);
@@ -66,6 +67,7 @@
         var paginator = new Paginator(repository.find)
           .setItemsPerPage(config.itemsPerPage || defaultItemsPerPage)
           .setCriteria(config.criteria)
+          .setSorting(config.sortParams)
         ;
 
         // Loading first batch.
@@ -96,7 +98,23 @@
           var value = eval('entity.' + fieldName);
           var formatter = config.formatters[field.type] || config.formatters.default;
           return formatter(value, field);
-        }
+        };
+
+        $scope.getImageUrl = function (entity, url) {
+          if ('function' === typeof url) {
+            return url(entity);
+          } else {
+            return url;
+          }
+        };
+
+        $scope.getLinkParams = function (entity, link) {
+          var params = {};
+          if ('function' === typeof link.params) {
+            params = link.params(entity);
+          }
+          return JSON.stringify(params);
+        };
 
       };
     })
@@ -132,7 +150,15 @@
 
     formatters.date = function (value, field) {
       if (moment && moment.isMoment(value)) {
-        return value.format(field.format || 'D.M.YY HH:mm:ss');
+        return value.format(field.format || 'D.M.YY');
+      } else if (value instanceof Date) {
+        return value.toString();
+      }
+    };
+
+    formatters.datetime = function (value, field) {
+      if (moment && moment.isMoment(value)) {
+        return value.format(field.format || 'DD.MM.YY HH:mm:ss');
       } else if (value instanceof Date) {
         return value.toString();
       }
