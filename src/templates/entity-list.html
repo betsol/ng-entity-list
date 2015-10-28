@@ -25,19 +25,20 @@
             </thead>
             <tbody>
                 <tr ng-repeat="entity in paginator.list">
-                    <td ng-repeat="(fieldName, field) in scheme.fields" ng-switch="field.type">
-                        <span ng-switch-when="image">
-                            <img ng-src="{~ getImageUrl(entity, field.url) ~}">
+                    <td
+                        ng-repeat="(fieldName, field) in scheme.fields"
+                        ng-class="getClassNames(entity, field)"
+                        title="{~ getTooltip(entity, field) ~}"
+                    >
+
+                        <a ng-if="field.link" ng-href="{~ getLinkUrl(entity, field) ~}" target="{~ field.link.target || '_self' ~}">
+                            <entity-field></entity-field>
+                        </a>
+
+                        <span ng-if="!field.link">
+                            <entity-field></entity-field>
                         </span>
-                        <span ng-switch-default>
-                            <a
-                                ui-sref="{~ field.link.stateName + '(' + getLinkParams(entity, field.link) + ')' ~}"
-                                ng-if="field.link"
-                            >{~ renderValue(entity, fieldName, field) ~}</a>
-                            <span ng-if="!field.link">
-                                {~ renderValue(entity, fieldName, field) ~}
-                            </span>
-                        </span>
+
                     </td>
                     <td ng-if="scheme.edit || scheme.delete" class="text-right">
                         <a
@@ -79,3 +80,17 @@
     <span class="fa fa-refresh fa-spin" ng-show="paginator.isLoading()"></span>
     Показать еще
 </button>
+
+<script type="text/ng-template" id="field.html">
+
+    <span ng-if="field.image">
+        <img ng-src="{~ getImageUrl(entity, field) ~}">
+    </span>
+
+    <span ng-if="field.icon">
+        <span ng-class="getIconClassName(entity, field)"></span>
+    </span>
+
+    {~ renderValue(entity, fieldName, field) ~}
+
+</script>

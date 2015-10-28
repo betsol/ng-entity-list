@@ -1,5 +1,14 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.0.5
+(28 Oct 2015)
+
+- Field content is now extracted in it's own directive for easy wrapping
+- Introduced concept of field transformers
+- Added support for tooltips
+- Skype and E-Mail field types are now fully-supported
+
+
 ## Version 0.0.4
 (25 Oct 2015)
 

@@ -1,6 +1,6 @@
 /**
  * betsol-ng-entity-list - Automatic entity lists for Angular.js
- * @version v0.0.3
+ * @version v0.0.4
  * @link https://github.com/betsol/ng-entity-list
  * @license MIT
  *
@@ -30,6 +30,8 @@
 
   var defaultItemsPerPage = 50;
 
+  var fieldTransformers = [];
+
 
   //================//
   // ANGULAR MODULE //
@@ -40,7 +42,7 @@
     'betsol.paginator'
   ])
 
-    .factory('EntityList', ['Paginator', function (Paginator) {
+    .factory('EntityList', ['Paginator', '$state', function (Paginator, $state) {
       return function (config) {
 
         var defaultConfig = {
@@ -51,7 +53,8 @@
           itemsPerPage: 50,
           formatters: getDefaultFormatters(),
           criteria: {},
-          sortParams: {}
+          sortParams: {},
+          fieldTransformers: []
         };
 
         config = angular.extend({}, defaultConfig, config);
@@ -67,6 +70,9 @@
         if (!config.repository) {
           return console.log('Missing repository');
         }
+
+        // Adding transformers from config.
+        fieldTransformers = fieldTransformers.concat(config.fieldTransformers);
 
         var $scope = config.scope;
         var repository = config.repository;
@@ -108,26 +114,114 @@
           return formatter(value, field);
         };
 
-        $scope.getImageUrl = function (entity, url) {
-          if ('function' === typeof url) {
-            return url(entity);
+        $scope.getImageUrl = function (entity, field) {
+          if ('function' === typeof field.image.url) {
+            return field.image.url(entity);
           } else {
-            return url;
+            return field.image.url;
           }
         };
 
-        $scope.getLinkParams = function (entity, link) {
-          var params = {};
-          if ('function' === typeof link.params) {
-            params = link.params(entity);
+        $scope.getClassNames = function (entity, field) {
+          var classNames = {};
+          if (field.classNames) {
+            angular.forEach(field.classNames, function (value, className) {
+              if ('function' === typeof value) {
+                classNames[className] = value(entity);
+              } else {
+                classNames[className] = value;
+              }
+            });
           }
-          return JSON.stringify(params);
+          return classNames;
+        };
+
+        $scope.getIconClassName = function (entity, field) {
+          if ('function' === typeof field.icon) {
+            return field.icon(entity);
+          } else {
+            return field.icon;
+          }
+        };
+
+        $scope.getTooltip = function (entity, field) {
+          if ('function' === typeof field.tooltip) {
+            return field.tooltip(entity);
+          } else {
+            return field.tooltip;
+          }
+        };
+
+        $scope.getLinkUrl = function (entity, field) {
+          if (!field.link) {
+            return null;
+          }
+          var link = field.link;
+          if (link.stateName) {
+            var params = {};
+            if ('function' === typeof link.params) {
+              params = link.params(entity);
+            }
+            return $state.href(link.stateName, params);
+          } else if (link.url) {
+            if ('function' === typeof link.url) {
+              return link.url(entity);
+            } else {
+              return link.url;
+            }
+          } else {
+            return null;
+          }
         };
 
       };
     }])
 
+    .directive('entityField', function () {
+        return {
+          restrict: 'E',
+          scope: false,
+          templateUrl: 'field.html'
+        }
+      }
+    )
+
   ;
+
+
+  /**
+   * Default E-Mail field transformer.
+   */
+  fieldTransformers.push({
+    type: 'email',
+    transformer: function (field, fieldName) {
+      if (field.link) {
+        return;
+      }
+      field.link = {
+        url: function (entity) {
+          return 'mailto:' + eval('entity.' + fieldName);
+        }
+      };
+    }
+  });
+
+  /**
+   * Default Skype field transformer.
+   */
+  fieldTransformers.push({
+    type: 'skype',
+    transformer: function (field, fieldName) {
+      if (field.link) {
+        return;
+      }
+      field.link = {
+        url: function (entity) {
+          return 'skype:' + eval('entity.' + fieldName) + '?chat';
+        }
+      };
+    }
+  });
 
 
   //===================//
@@ -144,9 +238,29 @@
   function normalizeScheme (scheme) {
     scheme = angular.extend({}, defaultScheme, scheme);
     angular.forEach(scheme.fields, function (field, fieldName) {
-      scheme.fields[fieldName] = angular.extend({}, defaultField, field);
+      field = angular.extend({}, defaultField, field);
+      applyTransformers(field, fieldName);
+      scheme.fields[fieldName] = field;
     });
     return scheme;
+  }
+
+  /**
+   * Applies field transformers to the specified field, according to type.
+   *
+   * @param {Object} field
+   * @param {string} fieldName
+   */
+  function applyTransformers (field, fieldName) {
+    angular.forEach(fieldTransformers, function (spec) {
+      if (field.type == spec.type) {
+        if ('function' !== typeof spec.transformer) {
+          console.log('Missing transformer function');
+          return;
+        }
+        spec.transformer(field, fieldName);
+      }
+    });
   }
 
   function getDefaultFormatters() {
@@ -154,6 +268,14 @@
 
     formatters.default = function (value) {
       return value;
+    };
+
+    formatters.email = function (value) {
+      return value.toLowerCase();
+    };
+
+    formatters.skype = function (value) {
+      return value.toLowerCase();
     };
 
     formatters.date = function (value, field) {
