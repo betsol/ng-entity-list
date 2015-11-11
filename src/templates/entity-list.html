@@ -1,14 +1,3 @@
-<h1>{~ scheme.title || 'Записи' ~}</h1>
-<hr>
-
-<div ng-if="scheme.add">
-    <a class="btn btn-default" ui-sref="{~ baseStateName + '.create' ~}">
-        <span class="fa fa-plus"></span>
-        Добавить
-    </a>
-    <hr>
-</div>
-
 <div class="clearfix">
     <div class="table-responsive">
         <table
@@ -31,7 +20,11 @@
                         title="{~ getTooltip(entity, field) ~}"
                     >
 
-                        <a ng-if="field.link" ng-href="{~ getLinkUrl(entity, field) ~}" target="{~ field.link.target || '_self' ~}">
+                        <a
+                            ng-if="field.link"
+                            ng-href="{~ getLinkUrl(entity, field) ~}"
+                            target="{~ field.link.target || '_self' ~}"
+                        >
                             <entity-field></entity-field>
                         </a>
 

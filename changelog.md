@@ -1,5 +1,16 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.0.6
+(11 Nov 2015)
+
+- Entity list service is refactored into a standalone directive (breaking change)
+- Default template URL now can be overridden
+- Added config service for directive pre-configuration
+- Directive emits special initialization event on creation and passes communication object to any interested subscriber.
+  Paginator can be accessed that way right now.
+- Removed table header and add button, this is out of scope of this directive
+
+
 ## Version 0.0.5
 (28 Oct 2015)
 

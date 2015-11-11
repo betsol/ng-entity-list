@@ -6,9 +6,9 @@ describe('Module', function () {
 
   beforeEach(module('betsol.entityList'));
 
-  var EntityList;
-  beforeEach(inject(function (_EntityList_) {
-    EntityList = _EntityList_;
+  var EntityListConfig;
+  beforeEach(inject(function (_EntityListConfig_) {
+    EntityListConfig = _EntityListConfig_;
   }));
 
 
@@ -17,7 +17,7 @@ describe('Module', function () {
   //=========//
 
   it('service should be present', function () {
-    expect(EntityList).to.be.a('function');
+    expect(EntityListConfig).to.be.an('object');
   });
 
 });

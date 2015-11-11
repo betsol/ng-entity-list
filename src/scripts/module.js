@@ -8,9 +8,7 @@
   //====================//
 
   var defaultScheme = {
-    title: '',
     fields: {},
-    add: true,
     edit: true,
     'delete': true
   };
@@ -19,6 +17,8 @@
     title: '',
     type: 'string'
   };
+
+  var defaultTemplateUrl = 'templates/entity-list.html';
 
   var defaultItemsPerPage = 50;
 
@@ -34,139 +34,173 @@
     'betsol.paginator'
   ])
 
-    .factory('EntityList', function (Paginator, $state) {
-      return function (config) {
+    .provider('EntityListConfig', function () {
 
-        var defaultConfig = {
-          scope: null,
-          baseStateName: '',
-          repository: null,
-          scheme: null,
-          itemsPerPage: 50,
-          formatters: getDefaultFormatters(),
-          criteria: {},
-          sortParams: {},
-          fieldTransformers: []
-        };
+      var templateUrl = defaultTemplateUrl;
 
-        config = angular.extend({}, defaultConfig, config);
-
-        if (!config.scope) {
-          return console.log('Missing scope');
+      var service = {
+        setTemplateUrl: function (newTemplateUrl) {
+          templateUrl = newTemplateUrl;
+          return this;
+        },
+        getTemplateUrl: function () {
+          return templateUrl;
         }
+      };
 
-        if (!config.baseStateName) {
-          return console.log('Missing base state name');
-        }
+      service.$get = function () {
+        return service;
+      };
 
-        if (!config.repository) {
-          return console.log('Missing repository');
-        }
+      return service;
 
-        // Adding transformers from config.
-        fieldTransformers = fieldTransformers.concat(config.fieldTransformers);
+    })
 
-        var $scope = config.scope;
-        var repository = config.repository;
-        var scheme = normalizeScheme(config.scheme || {});
+    .directive('bsEntityList', function (EntityListConfig) {
+      return {
+        restrict: 'E',
+        scope: {
+          config: '='
+        },
+        templateUrl: function () {
+          return EntityListConfig.getTemplateUrl();
+        },
+        controller: function ($scope, $state, Paginator) {
 
-        var paginator = new Paginator(repository.find)
-          .setItemsPerPage(config.itemsPerPage || defaultItemsPerPage)
-          .setCriteria(config.criteria)
-          .setSorting(config.sortParams)
-        ;
+          var defaultConfig = {
+            baseStateName: '',
+            repository: null,
+            scheme: null,
+            itemsPerPage: 50,
+            formatters: getDefaultFormatters(),
+            criteria: {},
+            sortParams: {},
+            fieldTransformers: []
+          };
 
-        // Loading first batch.
-        paginator.first();
+          var config = angular.extend({}, defaultConfig, $scope.config);
 
-        $scope.baseStateName = config.baseStateName;
-        $scope.scheme = scheme;
-        $scope.paginator = paginator;
+          if (!config.baseStateName) {
+            return console.log('Missing base state name');
+          }
 
-        if (scheme.delete) {
-          $scope.delete = function (entity) {
-            if (window.confirm('Вы уверены, что хотите удалить «' + entity.title + '»?')) {
-              repository
-                .delete(entity.id)
-                .then(function () {
-                  // @todo: delete item from the list instead and adjust offset accordingly!
-                  paginator.first();
-                })
-                .catch(function () {
-                  alert('Не удалось удалить запись');
-                })
-              ;
+          if (!config.repository) {
+            return console.log('Missing repository');
+          }
+
+          // Adding transformers from config.
+          fieldTransformers = fieldTransformers.concat(config.fieldTransformers);
+
+          var repository = config.repository;
+          var scheme = normalizeScheme(config.scheme || {});
+
+          var paginator = new Paginator(repository.find)
+            .setItemsPerPage(config.itemsPerPage || defaultItemsPerPage)
+            .setCriteria(config.criteria)
+            .setSorting(config.sortParams)
+          ;
+
+          // Loading first batch.
+          paginator.first();
+
+          $scope.baseStateName = config.baseStateName;
+          $scope.scheme = scheme;
+          $scope.paginator = paginator;
+
+          if (scheme.delete) {
+            $scope.delete = function (entity) {
+              if (window.confirm('Вы уверены, что хотите удалить «' + entity.title + '»?')) {
+                repository
+                  .delete(entity.id)
+                  .then(function () {
+                    // @todo: delete item from the list instead and adjust offset accordingly!
+                    paginator.first();
+                  })
+                  .catch(function () {
+                    alert('Не удалось удалить запись');
+                  })
+                ;
+              }
+            };
+          }
+
+          $scope.renderValue = function (entity, fieldName, field) {
+            var value = eval('entity.' + fieldName);
+            var formatter = config.formatters[field.type] || config.formatters.default;
+            return formatter(value, field);
+          };
+
+          $scope.getImageUrl = function (entity, field) {
+            if ('function' === typeof field.image.url) {
+              return field.image.url(entity);
+            } else {
+              return field.image.url;
             }
           };
-        }
 
-        $scope.renderValue = function (entity, fieldName, field) {
-          var value = eval('entity.' + fieldName);
-          var formatter = config.formatters[field.type] || config.formatters.default;
-          return formatter(value, field);
-        };
-
-        $scope.getImageUrl = function (entity, field) {
-          if ('function' === typeof field.image.url) {
-            return field.image.url(entity);
-          } else {
-            return field.image.url;
-          }
-        };
-
-        $scope.getClassNames = function (entity, field) {
-          var classNames = {};
-          if (field.classNames) {
-            angular.forEach(field.classNames, function (value, className) {
-              if ('function' === typeof value) {
-                classNames[className] = value(entity);
-              } else {
-                classNames[className] = value;
-              }
-            });
-          }
-          return classNames;
-        };
-
-        $scope.getIconClassName = function (entity, field) {
-          if ('function' === typeof field.icon) {
-            return field.icon(entity);
-          } else {
-            return field.icon;
-          }
-        };
-
-        $scope.getTooltip = function (entity, field) {
-          if ('function' === typeof field.tooltip) {
-            return field.tooltip(entity);
-          } else {
-            return field.tooltip;
-          }
-        };
-
-        $scope.getLinkUrl = function (entity, field) {
-          if (!field.link) {
-            return null;
-          }
-          var link = field.link;
-          if (link.stateName) {
-            var params = {};
-            if ('function' === typeof link.params) {
-              params = link.params(entity);
+          $scope.getClassNames = function (entity, field) {
+            var classNames = {};
+            if (field.classNames) {
+              angular.forEach(field.classNames, function (value, className) {
+                if ('function' === typeof value) {
+                  classNames[className] = value(entity);
+                } else {
+                  classNames[className] = value;
+                }
+              });
             }
-            return $state.href(link.stateName, params);
-          } else if (link.url) {
-            if ('function' === typeof link.url) {
-              return link.url(entity);
+            if (field.icon) {
+              classNames['has-icon'] = true;
+            }
+            return classNames;
+          };
+
+          $scope.getIconClassName = function (entity, field) {
+            if ('function' === typeof field.icon) {
+              return field.icon(entity);
             } else {
-              return link.url;
+              return field.icon;
             }
-          } else {
-            return null;
-          }
-        };
+          };
 
-      };
+          $scope.getTooltip = function (entity, field) {
+            if ('function' === typeof field.tooltip) {
+              return field.tooltip(entity);
+            } else {
+              return field.tooltip;
+            }
+          };
+
+          $scope.getLinkUrl = function (entity, field) {
+            if (!field.link) {
+              return null;
+            }
+            var link = field.link;
+            if (link.stateName) {
+              var params = {};
+              if ('function' === typeof link.params) {
+                params = link.params(entity);
+              }
+              return $state.href(link.stateName, params);
+            } else if (link.url) {
+              if ('function' === typeof link.url) {
+                return link.url(entity);
+              } else {
+                return link.url;
+              }
+            } else {
+              return null;
+            }
+          };
+
+          $scope.$emit('bs.entity-list.init', {
+            getPaginator: function () {
+              return $scope.paginator;
+            }
+          });
+
+        }
+      }
     })
 
     .directive('entityField', function () {
