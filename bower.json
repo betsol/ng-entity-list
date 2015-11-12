@@ -1,7 +1,7 @@
 {
   "name": "betsol-ng-entity-list",
   "description": "Automatic entity lists for Angular.js",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "main": "dist/betsol-ng-entity-list.js",
   "ignore": [
     "src",
@@ -13,7 +13,8 @@
   ],
   "dependencies": {
     "angular-ui-router": "~0.2.15",
-    "betsol-ng-paginator": "~0"
+    "betsol-ng-paginator": "~0",
+    "angular-dropdowns": "~1.1.0"
   },
   "devDependencies": {
     "angular": "~1",

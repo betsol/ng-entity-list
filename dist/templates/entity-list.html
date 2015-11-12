@@ -1,6 +1,6 @@
 <!--
  betsol-ng-entity-list - Automatic entity lists for Angular.js
- @version v0.0.6
+ @version v0.1.0
  @link https://github.com/betsol/ng-entity-list
  @license MIT
 
@@ -27,19 +27,7 @@
                         ng-class="getClassNames(entity, field)"
                         title="{~ getTooltip(entity, field) ~}"
                     >
-
-                        <a
-                            ng-if="field.link"
-                            ng-href="{~ getLinkUrl(entity, field) ~}"
-                            target="{~ field.link.target || '_self' ~}"
-                        >
-                            <entity-field></entity-field>
-                        </a>
-
-                        <span ng-if="!field.link">
-                            <entity-field></entity-field>
-                        </span>
-
+                        <entity-field></entity-field>
                     </td>
                     <td ng-if="scheme.edit || scheme.delete" class="text-right">
                         <a
@@ -81,17 +69,3 @@
     <span class="fa fa-refresh fa-spin" ng-show="paginator.isLoading()"></span>
     Показать еще
 </button>
-
-<script type="text/ng-template" id="field.html">
-
-    <span ng-if="field.image">
-        <img ng-src="{~ getImageUrl(entity, field) ~}">
-    </span>
-
-    <span ng-if="field.icon">
-        <span ng-class="getIconClassName(entity, field)"></span>
-    </span>
-
-    {~ renderValue(entity, fieldName, field) ~}
-
-</script>

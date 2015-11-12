@@ -1,5 +1,13 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.1.0
+(12 Nov 2015)
+
+- Entity field is now generated dynamically inside of internal directive's linking function.
+  We can achieve much more flexibility this way in the future
+- Introduced dependency for `ngDropdowns` module (not yet supported)
+
+
 ## Version 0.0.6
 (11 Nov 2015)
 

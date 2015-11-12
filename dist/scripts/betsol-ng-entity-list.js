@@ -1,6 +1,6 @@
 /**
  * betsol-ng-entity-list - Automatic entity lists for Angular.js
- * @version v0.0.6
+ * @version v0.1.0
  * @link https://github.com/betsol/ng-entity-list
  * @license MIT
  *
@@ -22,6 +22,7 @@
   };
 
   var defaultField = {
+    name: '',
     title: '',
     type: 'string'
   };
@@ -39,7 +40,8 @@
 
   angular.module('betsol.entityList', [
     'ui.router',
-    'betsol.paginator'
+    'betsol.paginator',
+    'ngDropdowns'
   ])
 
     .provider('EntityListConfig', function () {
@@ -132,73 +134,10 @@
             };
           }
 
-          $scope.renderValue = function (entity, fieldName, field) {
-            var value = eval('entity.' + fieldName);
+          $scope.renderValue = function (entity, field) {
+            var value = eval('entity.' + field.name);
             var formatter = config.formatters[field.type] || config.formatters.default;
             return formatter(value, field);
-          };
-
-          $scope.getImageUrl = function (entity, field) {
-            if ('function' === typeof field.image.url) {
-              return field.image.url(entity);
-            } else {
-              return field.image.url;
-            }
-          };
-
-          $scope.getClassNames = function (entity, field) {
-            var classNames = {};
-            if (field.classNames) {
-              angular.forEach(field.classNames, function (value, className) {
-                if ('function' === typeof value) {
-                  classNames[className] = value(entity);
-                } else {
-                  classNames[className] = value;
-                }
-              });
-            }
-            if (field.icon) {
-              classNames['has-icon'] = true;
-            }
-            return classNames;
-          };
-
-          $scope.getIconClassName = function (entity, field) {
-            if ('function' === typeof field.icon) {
-              return field.icon(entity);
-            } else {
-              return field.icon;
-            }
-          };
-
-          $scope.getTooltip = function (entity, field) {
-            if ('function' === typeof field.tooltip) {
-              return field.tooltip(entity);
-            } else {
-              return field.tooltip;
-            }
-          };
-
-          $scope.getLinkUrl = function (entity, field) {
-            if (!field.link) {
-              return null;
-            }
-            var link = field.link;
-            if (link.stateName) {
-              var params = {};
-              if ('function' === typeof link.params) {
-                params = link.params(entity);
-              }
-              return $state.href(link.stateName, params);
-            } else if (link.url) {
-              if ('function' === typeof link.url) {
-                return link.url(entity);
-              } else {
-                return link.url;
-              }
-            } else {
-              return null;
-            }
           };
 
           $scope.$emit('bs.entity-list.init', {
@@ -211,13 +150,111 @@
       }
     }])
 
-    .directive('entityField', function () {
+    .directive('entityField', ['$compile', '$state', function ($compile, $state) {
         return {
           restrict: 'E',
           scope: false,
-          templateUrl: 'field.html'
+          link: function ($scope, $directiveElement) {
+
+            var field = $scope.field;
+            var entity = $scope.entity;
+            var elementType = 'span';
+            if (field.link) {
+              elementType = 'a';
+            }
+
+            var $element = $('<' + elementType + '/>');
+
+            // Link functionality.
+            if (field.link) {
+              $element.attr('href', getLinkUrl(field.link, entity));
+              if (field.link.target) {
+                $element.attr('target', field.link.target);
+              }
+            }
+
+            // Tooltip functionality.
+            if (field.tooltip) {
+              $element.attr('title', funcToScalar(entity, field.tooltip));
+            }
+
+            // Class Names.
+            if (field.classNames) {
+              angular.forEach(field.classNames, function (value, className) {
+                value = funcToScalar(entity, value);
+                if (value) {
+                  $element.addClass(className);
+                }
+              });
+            }
+
+            // Icon element.
+            if (field.icon) {
+              appendNewElement($element, 'span')
+                .addClass(funcToScalar(entity, field.icon))
+              ;
+            }
+
+            // Image element.
+            if (field.image && field.image.url) {
+              appendNewElement($element, 'img')
+                .attr('src', funcToScalar(entity, field.image.url))
+              ;
+            }
+
+            // Value element.
+            $element.append(
+              $('<span/>')
+                .attr('ng-bind', 'renderValue(entity, field)')
+            );
+
+            $element = $compile($element)($scope);
+            $directiveElement.append($element);
+            $scope.value = $scope.entity[$scope.field.name];
+          }
+        };
+
+
+        function appendNewElement ($parent, type) {
+          var $element = $('<' + type + '/>');
+          $parent.append($element);
+          $element.after("\n");
+          return $element;
         }
-      }
+
+        /**
+         * @param {object} link
+         * @param {object} entity
+         *
+         * @returns {string}
+         */
+        function getLinkUrl (link, entity) {
+          if (link.stateName) {
+            var params = {};
+            if ('function' === typeof link.params) {
+              params = link.params(entity);
+            }
+            return $state.href(link.stateName, params);
+          } else if (link.url) {
+            if ('function' === typeof link.url) {
+              return link.url(entity);
+            } else {
+              return link.url;
+            }
+          } else {
+            return '#';
+          }
+        }
+
+        function funcToScalar (argument, funcOrScalar) {
+          if ('function' === typeof funcOrScalar) {
+            return funcOrScalar(argument);
+          } else {
+            return funcOrScalar;
+          }
+        }
+
+      }]
     )
 
   ;
@@ -267,12 +304,13 @@
    *
    * @param {object} scheme
    *
-   * @returns {array}
+   * @returns {object}
    */
   function normalizeScheme (scheme) {
     scheme = angular.extend({}, defaultScheme, scheme);
     angular.forEach(scheme.fields, function (field, fieldName) {
       field = angular.extend({}, defaultField, field);
+      field.name = fieldName;
       applyTransformers(field, fieldName);
       scheme.fields[fieldName] = field;
     });
@@ -331,5 +369,6 @@
     return formatters;
 
   }
+
 
 })(window, angular, window.moment);
