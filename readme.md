@@ -18,8 +18,9 @@ Convenient re-usable controller for lists of entities that makes your code very 
 
 ## Dependencies
 
-- [AngularUI Router][ui-router] is used for navigation between states
-- [betsol-ng-paginator][bs-paginator] is used to fetch list of entities
+- [AngularUI Router][ui-router] for navigation between states
+- [betsol-ng-paginator][bs-paginator] to fetch list of entities
+- [InView Directive for AngularJS][angular-inview] for infinite scrolling
 
 
 ## Installation
@@ -132,11 +133,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-  [changelog]:    changelog.md
-  [so-ask]:       http://stackoverflow.com/questions/ask?tags=angularjs,javascript
-  [email]:        mailto:s.fomin@betsol.ru
-  [new-issue]:    https://github.com/betsol/ng-entity-list/issues/new
-  [gulp]:         http://gulpjs.com/
-  [repo-gh]:      https://github.com/betsol/ng-entity-list
-  [bs-paginator]: https://github.com/betsol/ng-paginator
-  [ui-router]:    https://github.com/angular-ui/ui-router
+  [changelog]:      changelog.md
+  [so-ask]:         http://stackoverflow.com/questions/ask?tags=angularjs,javascript
+  [email]:          mailto:s.fomin@betsol.ru
+  [new-issue]:      https://github.com/betsol/ng-entity-list/issues/new
+  [gulp]:           http://gulpjs.com/
+  [repo-gh]:        https://github.com/betsol/ng-entity-list
+  [bs-paginator]:   https://github.com/betsol/ng-paginator
+  [ui-router]:      https://github.com/angular-ui/ui-router
+  [angular-inview]: https://github.com/thenikso/angular-inview

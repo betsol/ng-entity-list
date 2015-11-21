@@ -1,6 +1,6 @@
 <!--
  betsol-ng-entity-list - Automatic entity lists for Angular.js
- @version v0.1.0
+ @version v0.1.1
  @link https://github.com/betsol/ng-entity-list
  @license MIT
 
@@ -65,6 +65,7 @@
     ng-click="paginator.next()"
     ng-show="paginator.hasMoreItems()"
     ng-disabled="paginator.isLoading()"
+    in-view="$inview && !paginator.isLoading() && paginator.hasMoreItems() && paginator.next()"
 >
     <span class="fa fa-refresh fa-spin" ng-show="paginator.isLoading()"></span>
     Показать еще

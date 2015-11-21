@@ -33,7 +33,8 @@
   angular.module('betsol.entityList', [
     'ui.router',
     'betsol.paginator',
-    'ngDropdowns'
+    'ngDropdowns',
+    'angular-inview'
   ])
 
     .provider('EntityListConfig', function () {
@@ -75,8 +76,8 @@
             scheme: null,
             itemsPerPage: 50,
             formatters: getDefaultFormatters(),
-            criteria: {},
-            sortParams: {},
+            criteria: null,
+            sortParams: null,
             fieldTransformers: []
           };
 
@@ -98,9 +99,15 @@
 
           var paginator = new Paginator(repository.find)
             .setItemsPerPage(config.itemsPerPage || defaultItemsPerPage)
-            .setCriteria(config.criteria)
-            .setSorting(config.sortParams)
           ;
+
+          if (config.criteria) {
+            paginator.setCriteria(config.criteria)
+          }
+
+          if (config.sortParams) {
+            paginator.setSorting(config.sortParams)
+          }
 
           // Loading first batch.
           paginator.first();

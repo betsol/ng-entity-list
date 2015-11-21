@@ -1,5 +1,12 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.1.1
+(21 Nov 2015)
+
+- Implemented infinite scrolling using `inview` module
+- Minor fix for criteria and sort params
+
+
 ## Version 0.1.0
 (12 Nov 2015)
 

@@ -57,6 +57,7 @@
     ng-click="paginator.next()"
     ng-show="paginator.hasMoreItems()"
     ng-disabled="paginator.isLoading()"
+    in-view="$inview && !paginator.isLoading() && paginator.hasMoreItems() && paginator.next()"
 >
     <span class="fa fa-refresh fa-spin" ng-show="paginator.isLoading()"></span>
     Показать еще
