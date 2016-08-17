@@ -202,9 +202,17 @@
             }
 
             // Value element.
+
+            var ngBindValue = 'renderValue(entity, field)';
+
+            // Adding filters if necessary.
+            if (field.filter) {
+              ngBindValue += ' | ' + (Array.isArray(field.filter) ? field.filter.join(' | ') : field.filter);
+            }
+
             $element.append(
               $('<span/>')
-                .attr('ng-bind', 'renderValue(entity, field)')
+                .attr('ng-bind', ngBindValue)
             );
 
             $element = $compile($element)($scope);
