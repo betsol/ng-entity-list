@@ -1,5 +1,11 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.2.1
+(16 Aug 2016)
+
+- Added support for value filters
+
+
 ## Version 0.1.1
 (21 Nov 2015)
 

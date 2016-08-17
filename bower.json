@@ -1,7 +1,7 @@
 {
   "name": "betsol-ng-entity-list",
   "description": "Automatic entity lists for Angular.js",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "main": "dist/betsol-ng-entity-list.js",
   "ignore": [
     "src",
