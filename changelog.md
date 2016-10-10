@@ -1,5 +1,11 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.3.0
+(10 Oct 2016)
+
+- Added support for custom field values
+
+
 ## Version 0.2.1
 (16 Aug 2016)
 

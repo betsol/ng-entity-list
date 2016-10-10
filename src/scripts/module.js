@@ -134,7 +134,14 @@
           }
 
           $scope.renderValue = function (entity, field) {
-            var value = eval('entity.' + field.name);
+            var value;
+            if ('function' === typeof field.value) {
+              value = field.value(entity);
+            } else if (field.value) {
+              value = field.value;
+            } else {
+              value = eval('entity.' + field.name);
+            }
             var formatter = config.formatters[field.type] || config.formatters.default;
             return formatter(value, field);
           };

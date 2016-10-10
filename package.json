@@ -1,7 +1,7 @@
 {
   "name": "betsol-ng-entity-list",
   "description": "Automatic entity lists for Angular.js",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "homepage": "https://github.com/betsol/ng-entity-list",
   "license": "MIT",
   "main": "dist/betsol-ng-entity-list.js",

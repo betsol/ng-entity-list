@@ -1,6 +1,6 @@
 /**
  * betsol-ng-entity-list - Automatic entity lists for Angular.js
- * @version v0.2.1
+ * @version v0.3.0
  * @link https://github.com/betsol/ng-entity-list
  * @license MIT
  *
@@ -142,7 +142,14 @@
           }
 
           $scope.renderValue = function (entity, field) {
-            var value = eval('entity.' + field.name);
+            var value;
+            if ('function' === typeof field.value) {
+              value = field.value(entity);
+            } else if (field.value) {
+              value = field.value;
+            } else {
+              value = eval('entity.' + field.name);
+            }
             var formatter = config.formatters[field.type] || config.formatters.default;
             return formatter(value, field);
           };
