@@ -1,5 +1,11 @@
 # betsol-ng-entity-list changelog
 
+## Version 0.4.0
+(10 Oct 2016)
+
+- Added support for row decorators
+
+
 ## Version 0.3.0
 (10 Oct 2016)
 

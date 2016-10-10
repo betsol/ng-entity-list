@@ -146,6 +146,15 @@
             return formatter(value, field);
           };
 
+          $scope.getClassForEntity = function (entity) {
+            if ('function' === typeof config.rowDecorator) {
+              var decorations = config.rowDecorator(entity);
+              return decorations.className;
+            } else {
+              return '';
+            }
+          };
+
           $scope.$emit('bs.entity-list.init', {
             getPaginator: function () {
               return $scope.paginator;

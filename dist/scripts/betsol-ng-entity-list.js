@@ -1,6 +1,6 @@
 /**
  * betsol-ng-entity-list - Automatic entity lists for Angular.js
- * @version v0.3.0
+ * @version v0.4.0
  * @link https://github.com/betsol/ng-entity-list
  * @license MIT
  *
@@ -152,6 +152,15 @@
             }
             var formatter = config.formatters[field.type] || config.formatters.default;
             return formatter(value, field);
+          };
+
+          $scope.getClassForEntity = function (entity) {
+            if ('function' === typeof config.rowDecorator) {
+              var decorations = config.rowDecorator(entity);
+              return decorations.className;
+            } else {
+              return '';
+            }
           };
 
           $scope.$emit('bs.entity-list.init', {

@@ -1,6 +1,6 @@
 <!--
  betsol-ng-entity-list - Automatic entity lists for Angular.js
- @version v0.3.0
+ @version v0.4.0
  @link https://github.com/betsol/ng-entity-list
  @license MIT
 
@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="entity in paginator.list">
+                <tr ng-repeat="entity in paginator.list" ng-class="getClassForEntity(entity)">
                     <td
                         ng-repeat="(fieldName, field) in scheme.fields"
                         ng-class="getClassNames(entity, field)"
